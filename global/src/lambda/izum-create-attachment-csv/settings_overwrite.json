@@ -1,0 +1,9 @@
+{
+  "variables": {
+    "POWERTOOLS_SERVICE_NAME": "izum-list-objects",
+    "POWERTOOLS_LOG_LEVEL": "INFO",
+    "s3_bucket_parameter": "/izum/s3_bucket"
+  },
+  "timeout": 900,
+  "memory_size": 3008
+}

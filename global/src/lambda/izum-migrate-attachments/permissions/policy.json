@@ -1,0 +1,47 @@
+{
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:List*",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::*",
+        "arn:aws:s3:::*/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:Scan",
+        "dynamodb:PutItem",
+        "dynamodb:GetItem"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:${region}:${account_id}:table/izum-attachments"
+      ]
+    },
+    {
+      "Sid": "Statement1",
+      "Effect": "Allow",
+      "Action": [
+          "ssm:GetParameter"
+      ],
+      "Resource": [
+          "arn:aws:ssm:${region}:${account_id}:parameter/izum/*"
+      ]
+    }
+  ],
+  "Version": "2012-10-17"
+}

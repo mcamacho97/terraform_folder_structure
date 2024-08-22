@@ -1,0 +1,8 @@
+{
+  "variables": {
+    "POWERTOOLS_SERVICE_NAME": "izum-presigned-url",
+    "POWERTOOLS_LOG_LEVEL": "INFO",
+    "s3_bucket_parameter": "/izum/s3_bucket",
+    "ALLOWED_ORIGIN": "*"
+  }
+}

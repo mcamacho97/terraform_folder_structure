@@ -1,0 +1,143 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["iam:PassRole", "sns:CreateTopic"],
+      "Effect": "Allow",
+      "Resource": ["*"],
+      "Sid": "MultMultNone"
+    },
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroupsPages",
+        "logs:DeleteRetentionPolicy",
+        "logs:DisassociateKmsKey",
+        "logs:AssociateKmsKey",
+        "logs:DeleteLogGroup",
+        "logs:DescribeLogGroups",
+        "logs:ListTagsLogGroup",
+        "logs:TagResource",
+        "logs:PutRetentionPolicy"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:logs:${region}:${account_id}:log-group:/aws/codebuild/${project}",
+        "arn:aws:logs:${region}:${account_id}:log-group:/aws/codebuild/${project}:*"
+      ]
+    },
+    {
+      "Sid": "CodepipelineTerraformStatesBuckets",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:GetBucketAcl",
+        "s3:GetBucketLocation",
+        "s3:ListBucket",
+        "s3:ListObjectsV2",
+        "s3:DeleteObject"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::aws-pipelines-project-dev",
+        "arn:aws:s3:::aws-pipelines-project-dev/*",
+        "arn:aws:s3:::terraform-states-projects-dev",
+        "arn:aws:s3:::terraform-states-projects-dev/*",
+        "arn:aws:s3:::${hosting_bucket_name}",
+        "arn:aws:s3:::${hosting_bucket_name}/*"
+      ]
+    },
+    {
+      "Action": ["iam:GetRole", "iam:GetRolePolicy"],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:iam::${account_id}:role/BLRoleFor*",
+        "arn:aws:iam::${account_id}:role/SIRoleFor*",
+        "arn:aws:iam::${account_id}:role/AWSRoleFor*"
+      ],
+      "Sid": "IamReadRole"
+    },
+    {
+      "Action": ["codecommit:GitPull"],
+      "Effect": "Allow",
+      "Resource": ["arn:aws:codecommit:${region}:${account_id}:${project}"]
+    },
+    {
+      "Action": [
+        "codebuild:CreateReportGroup",
+        "codebuild:CreateReport",
+        "codebuild:UpdateReport",
+        "codebuild:BatchPutTestCases",
+        "codebuild:BatchPutCodeCoverages"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:codebuild:${region}:${account_id}:report-group/${project}-*"
+      ]
+    },
+    {
+      "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:GetParametersByPath"
+      ],
+      "Effect": "Allow",
+      "Resource": ["arn:aws:ssm:${region}:${account_id}:parameter/*"],
+      "Sid": "SsmReadParameter"
+    },
+    {
+      "Action": [
+        "ssm:LabelParameterVersion",
+        "ssm:PutParameter",
+        "ssm:UnlabelParameterVersion"
+      ],
+      "Effect": "Allow",
+      "Resource": ["arn:aws:ssm:${region}:${account_id}:parameter/*"],
+      "Sid": "SsmWriteParameter"
+    },
+    {
+      "Action": [
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:ListRoleTags"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:iam::${account_id}:role/BLRoleFor*",
+        "arn:aws:iam::${account_id}:role/SIRoleFor*",
+        "arn:aws:iam::${account_id}:role/AWSRoleFor*"
+      ],
+      "Sid": "IamListRole"
+    },
+    {
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:ecr:${region}:${account_id}:repository/amazonlinuxterraform",
+        "arn:aws:ecr:${region}:${account_id}:repository/terraform",
+        "arn:aws:ecr:${region}:${account_id}:repository/checkov-git-secrets",
+        "arn:aws:ecr:${region}:${account_id}:repository/devops-runtime"
+      ],
+      "Sid": "getECRImagePermission"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["ecr:GetAuthorizationToken"],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["cloudfront:CreateInvalidation"],
+      "Resource": [
+        "arn:aws:cloudfront::${account_id}:distribution/${cloudfront}"
+      ]
+    }
+  ]
+}

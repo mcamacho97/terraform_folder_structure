@@ -1,0 +1,33 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:PutLogEvents",
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream"
+      ],
+      "Resource": "arn:aws:logs:*:*:*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:List*", "s3:PutObject"],
+      "Resource": ["arn:aws:s3:::*", "arn:aws:s3:::*/*"]
+    },
+    {
+      "Sid": "Statement1",
+      "Effect": "Allow",
+      "Action": ["ssm:GetParameter"],
+      "Resource": ["arn:aws:ssm:${region}:${account_id}:parameter/izum/*"]
+    },
+    {
+      "Sid": "StatesWriteStatemachine",
+      "Effect": "Allow",
+      "Action": ["states:StartExecution", "states:StartSyncExecution"],
+      "Resource": [
+        "arn:aws:states:${region}:${account_id}:stateMachine:izum-migrate-attachments"
+      ]
+    }
+  ]
+}

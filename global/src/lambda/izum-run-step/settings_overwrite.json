@@ -1,0 +1,7 @@
+{
+  "variables": {
+    "POWERTOOLS_SERVICE_NAME": "izum-run-step",
+    "POWERTOOLS_LOG_LEVEL": "INFO",
+    "WORKFLOW": "arn:aws:states:{}:{}:stateMachine:izum-migrate-attachments"
+  }
+}

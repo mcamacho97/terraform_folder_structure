@@ -1,0 +1,64 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VisualEditor0",
+      "Effect": "Allow",
+      "Action": [
+        "states:RedriveExecution",
+        "xray:PutTelemetryRecords",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "states:StopExecution",
+        "logs:CreateLogGroup",
+        "logs:GetLogDelivery",
+        "logs:PutLogEvents",
+        "xray:GetSamplingTargets",
+        "logs:ListLogDeliveries",
+        "xray:PutTraceSegments",
+        "logs:CreateLogDelivery",
+        "logs:PutResourcePolicy",
+        "logs:CreateLogStream",
+        "states:DescribeExecution",
+        "logs:UpdateLogDelivery",
+        "xray:GetSamplingRules",
+        "states:StartExecution",
+        "logs:DeleteLogDelivery",
+        "logs:DescribeResourcePolicies",
+        "logs:DescribeDestinations",
+        "s3:PutObject",
+        "s3:List*",
+        "s3:GetObject"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Statement1",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameter"
+      ],
+      "Resource": [
+        "arn:aws:ssm:${region}:${account_id}:parameter/izum/*"
+      ]
+    },
+    {
+      "Sid": "LambdaWriteFunction",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:InvokeAsync",
+        "lambda:InvokeFunction"
+      ],
+      "Resource": [
+        "arn:aws:lambda:${region}:${account_id}:function:izum-create-attachment-csv",
+        "arn:aws:lambda:${region}:${account_id}:function:izum-migrate-attachments"
+      ]
+    },
+    {
+      "Sid": "SnsWriteTopic",
+      "Effect": "Allow",
+      "Action": ["sns:Publish"],
+      "Resource": ["arn:aws:sns:${region}:${account_id}:IzumNotificationsTopic"]
+    }
+  ]
+}

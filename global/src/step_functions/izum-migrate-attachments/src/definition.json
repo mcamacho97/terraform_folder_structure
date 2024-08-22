@@ -1,0 +1,114 @@
+{
+  "Comment": "Distributed map that reads CSV file for order data and detects delayed orders",
+  "StartAt": "Get Bucket Name",
+  "States": {
+    "Get Bucket Name": {
+      "Type": "Task",
+      "Parameters": {
+        "Name": "/izum/s3_bucket"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:ssm:getParameter",
+      "Next": "Create csv file from base csv"
+    },
+    "Create csv file from base csv": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "izum-create-attachment-csv"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Get csv file from s3",
+      "ResultPath": "$.lambda"
+    },
+    "Get csv file from s3": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "DISTRIBUTED",
+          "ExecutionType": "STANDARD"
+        },
+        "StartAt": "Process attachments",
+        "States": {
+          "Process attachments": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "OutputPath": "$.Payload",
+            "Parameters": {
+              "Payload.$": "$",
+              "FunctionName": "izum-migrate-attachments"
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2
+              }
+            ],
+            "End": true
+          }
+        }
+      },
+      "Label": "FileAnalysis",
+      "MaxConcurrency": 30,
+      "ItemReader": {
+        "Resource": "arn:aws:states:::s3:getObject",
+        "ReaderConfig": {
+          "InputType": "CSV",
+          "CSVHeaderLocation": "FIRST_ROW"
+        },
+        "Parameters": {
+          "Bucket.$": "$.Parameter.Value",
+          "Key.$": "$.lambda.Payload.key"
+        }
+      },
+      "ItemBatcher": {
+        "MaxItemsPerBatch": 1
+      },
+      "ResultPath": null,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "SNS Publish"
+        }
+      ],
+      "Next": "Success",
+      "ToleratedFailurePercentage": 5
+    },
+    "Success": {
+      "Type": "Succeed"
+    },
+    "SNS Publish": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn.$": "States.Format('arn:aws:sns:{}:{}:IzumNotificationsTopic', States.ArrayGetItem(States.StringSplit($$.StateMachine.Id, ':'), 3),States.ArrayGetItem(States.StringSplit($$.StateMachine.Id, ':'), 4))"
+      },
+      "Next": "Fail"
+    },
+    "Fail": {
+      "Type": "Fail"
+    }
+  }
+}

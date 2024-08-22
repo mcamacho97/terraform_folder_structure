@@ -1,0 +1,17 @@
+{
+  "variables": {
+    "POWERTOOLS_SERVICE_NAME": "izum-compress-images",
+    "POWERTOOLS_LOG_LEVEL": "INFO",
+    "ORIGIN_BUCKET": "izum-bucket-{default}",
+    "DESTINY_BUCKET": "izum-bucket-compress-images{default}",
+    "ALLOW_FORMATS": ".jpg,.png,.gif,.JPEG,.JPG,.PNG",
+    "MINIMUM_QUALITY": "50",
+    "OUTPUT_FORMAT": "WebP",
+    "QUALITY": "95",
+    "TARGET_SIZE": "100000",
+    "TABLE_NAME": "izum-attachments"
+  },
+  "timeout": 900,
+  "memory_size": 3008,
+  "runtime": "python3.12"
+}
